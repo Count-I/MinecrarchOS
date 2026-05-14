@@ -189,7 +189,7 @@ Apply these in every component, every prompt:
 
 When reasoning about where something belongs or what can fail at what point:
 
-```
+```text
 UEFI
   → systemd-boot           # loads linux-zen vmlinuz + initramfs
   → linux-zen              # kernel init

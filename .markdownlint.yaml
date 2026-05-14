@@ -25,3 +25,7 @@ MD032: false
 # Allow flexible unordered list indentation — content may use nested
 # lists with varying indent styles
 MD007: false
+
+# Allow duplicate heading names — docs/ipc.md uses the same sub-headings
+# (Methods, Signals, Properties) for each service section intentionally
+MD024: false

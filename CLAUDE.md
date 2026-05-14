@@ -16,7 +16,7 @@ Minecrarch-OS is currently in **Phase 0 — Formal Architecture Design**. No sou
 
 A dedicated Linux gaming appliance platform built around Minecraft — not a desktop distro, not a launcher skin, not a collection of scripts. The intended boot-to-game flow:
 
-```
+```text
 UEFI → systemd-boot → linux-zen → systemd → Autologin → Gamescope Session → Minecrarch Shell → Minecraft
 ```
 
@@ -35,7 +35,7 @@ UEFI → systemd-boot → linux-zen → systemd → Autologin → Gamescope Sess
 
 ## Planned Repository Structure
 
-```
+```text
 minecrarch-os/
 ├── shell/         # Minecrarch Shell — orchestration layer (UX, navigation, session lifecycle, overlays)
 ├── services/      # Runtime services (mod manager, update orchestration, logging, overlay system)

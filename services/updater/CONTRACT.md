@@ -45,7 +45,7 @@ This service must NOT:
 
 This protocol is mandatory. Deviating from it is an architectural failure:
 
-```
+```text
 1. Check that no game is currently running (ModpackManager.ActiveInstance == "")
 2. Create btrfs snapshot of @ subvolume:
      btrfs subvolume snapshot / /mnt/snapshots/@pre-update-YYYYMMDD-HHMMSS

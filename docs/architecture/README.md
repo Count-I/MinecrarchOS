@@ -10,7 +10,7 @@ The architecture is organized in strict layers. Each layer has one job. Each lay
 
 ## System Layers
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                         Hardware                            │
 └───────────────────────────┬─────────────────────────────────┘
@@ -109,7 +109,7 @@ The privileged workload. Initial target: Bedrock Edition. Long-term: Java Editio
 
 All inter-process communication between the shell and services uses D-Bus on the systemd user session bus.
 
-```
+```text
 Minecrarch Shell (zbus client)
         │
         │   D-Bus user session bus
@@ -199,7 +199,7 @@ sequenceDiagram
 
 ## Filesystem Layout (Planned)
 
-```
+```text
 /
 ├── @                    (btrfs root subvolume)
 │   ├── boot/            (ESP mountpoint — systemd-boot entries, vmlinuz-linux-zen)

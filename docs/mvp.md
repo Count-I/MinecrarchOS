@@ -15,7 +15,7 @@ The MVP is proof that the platform architecture works end-to-end. It validates t
 
 **MVP definition:**
 
-```
+```text
 boot
   → linux-zen kernel
   → systemd user session

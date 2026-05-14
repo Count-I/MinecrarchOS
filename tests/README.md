@@ -6,7 +6,7 @@ Full strategy: [`docs/testing-strategy.md`](../docs/testing-strategy.md)
 
 ## Directory Structure
 
-```
+```text
 tests/
 ├── ipc/                    IPC contract conformance tests (Rust, cargo test)
 ├── services/               Service isolation tests (systemd-nspawn)
@@ -22,32 +22,38 @@ tests/
 ## Running Tests
 
 ### Unit tests (per component)
+
 ```bash
 cargo test --workspace
 ```
 
 ### IPC contract tests
+
 ```bash
 # Requires the service binary to be running on the session bus
 cargo test --test ipc -- --nocapture
 ```
 
 ### Service isolation tests (requires systemd-nspawn + root)
+
 ```bash
 sudo bash tests/services/test-modpack-manager.sh
 ```
 
 ### Full-stack tests (requires QEMU/KVM)
+
 ```bash
 bash tests/full-stack/mvp-validation.sh
 ```
 
 ### Dependency boundary check
+
 ```bash
 bash tools/check-deps.sh
 ```
 
 ### MVP validation (manual procedure)
+
 See [`docs/mvp.md`](../docs/mvp.md) for the step-by-step validation procedure.
 
 ---

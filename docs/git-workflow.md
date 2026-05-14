@@ -10,7 +10,7 @@ Trunk-Based Development. One permanent branch (`main`), short-lived feature bran
 
 ## Branch Naming
 
-```
+```text
 feature/<what>      New capability
 fix/<what>          Bug fix
 refactor/<area>     Structural change without behavior change
@@ -21,7 +21,8 @@ perf/<area>         Performance improvement
 ```
 
 **Examples:**
-```
+
+```text
 feature/gamepad-navigation
 feature/bedrock-launcher
 fix/session-startup-race
@@ -43,7 +44,7 @@ Rules:
 
 [Conventional Commits](https://www.conventionalcommits.org/) — mandatory.
 
-```
+```text
 type(scope): description
 
 [optional body]
@@ -68,7 +69,8 @@ type(scope): description
 **Scopes:** `shell`, `services`, `runtime`, `session`, `iso`, `packaging`, `infra`, `docs`, `ci`, `adr`
 
 **Examples:**
-```
+
+```text
 feat(shell): add fullscreen radial game menu
 fix(session): resolve gamescope startup race on autologin
 refactor(modpack-manager): split launch and install concerns
@@ -113,7 +115,8 @@ Releases are tags on `main`. No permanent release branches.
 ### Version format
 
 **Phase 0–1 (current):** pre-release tags
-```
+
+```text
 v0.1-alpha
 v0.2-alpha
 v0.5-preview
@@ -122,7 +125,8 @@ v1.0
 ```
 
 **Phase 3+ (stable releases):** calendar versioning
-```
+
+```text
 2026.08
 2026.10
 2027.01
@@ -164,7 +168,8 @@ Nightly builds are triggered automatically by `nightly.yml` at UTC midnight. The
 The project starts as a monorepo. Components will split into separate repos as they mature. This is a planned evolution, not a current requirement.
 
 **Current (Phases 1–2): monorepo**
-```
+
+```text
 MinecrarchOS/   ← everything lives here
 ├── shell/
 ├── services/
@@ -176,7 +181,8 @@ MinecrarchOS/   ← everything lives here
 ```
 
 **Future (Phase 3+): multi-repo**
-```
+
+```text
 MinecrarchOS/         ← meta-repo, ISO builder, release manager, CI root
 minecrarch-shell/     ← shell package (Rust, GTK4)
 minecrarch-session/   ← session management, Gamescope integration
@@ -200,7 +206,7 @@ Never split prematurely. Splitting adds integration overhead.
 
 Configure on `main`:
 
-```
+```text
 ✅ Require a pull request before merging
    ✅ Require approvals: 1 (relaxed to 0 during early solo development)
    ✅ Dismiss stale pull request approvals when new commits are pushed
@@ -215,6 +221,7 @@ Configure on `main`:
 ```
 
 Apply via GitHub CLI:
+
 ```bash
 gh api repos/Count-I/MinecrarchOS/branches/main/protection \
   --method PUT \

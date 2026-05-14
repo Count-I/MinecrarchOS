@@ -10,7 +10,7 @@ Within this persistent session, the platform transitions through defined states 
 
 ## Session State Machine
 
-```
+```text
                     ┌─────────┐
                     │ BOOTING │  (systemd bringing up services)
                     └────┬────┘
@@ -75,7 +75,7 @@ Within this persistent session, the platform transitions through defined states 
 
 Gamescope manages a surface stack. The shell and game both run as Wayland clients within the same Gamescope session.
 
-```
+```text
 Gamescope (compositor — owns DRM/KMS)
 │
 ├── Game Surface          (Minecraft Wayland window)
@@ -130,7 +130,7 @@ The Gamescope socket IPC is separate from the standard Wayland protocol. It prov
 
 systemd dependency ordering for the user session:
 
-```
+```text
 minecrarch-logging.service          (starts first — all others log to it)
         │
         ▼ (After=)
@@ -158,7 +158,7 @@ The shell's `INITIALIZING` state explicitly verifies that all required D-Bus bus
 
 ### Suspend Flow
 
-```
+```text
 1. logind emits PrepareForSleep(true) on the system bus
 2. Shell receives signal via logind D-Bus subscription
 3. Shell acquires a systemd inhibitor lock (delay inhibitor)
@@ -171,7 +171,7 @@ The shell's `INITIALIZING` state explicitly verifies that all required D-Bus bus
 
 ### Resume Flow
 
-```
+```text
 1. logind emits PrepareForSleep(false) on resume
 2. Shell receives signal
 3. Shell checks if game process still exists (via pid from GameStarted signal):
@@ -186,7 +186,7 @@ The game process may be killed by the kernel during suspend on memory-constraine
 
 ## Shutdown Flow
 
-```
+```text
 1. User triggers shutdown (via shell UI or power button)
 2. Shell calls systemd Shutdown via logind D-Bus
 3. Before systemd proceeds:

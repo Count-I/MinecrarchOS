@@ -16,7 +16,7 @@ A unit test suite with 100% coverage that never tests the D-Bus interface is les
 
 ## Test Pyramid
 
-```
+```text
               ┌──────────────────┐
               │   QEMU Full Stack │  ← Slowest, most valuable for integration
               │   (boot to game)  │
@@ -68,6 +68,7 @@ These tests verify that service implementations conform to the D-Bus interface c
 - Trigger error conditions and assert correct D-Bus error names are returned.
 
 **Example IPC test structure:**
+
 ```rust
 // tests/ipc/test_modpack_manager.rs
 #[tokio::test]
@@ -218,7 +219,7 @@ This allows testing the shell's LAUNCHING → RECOVERING transition without runn
 
 ## tests/ Directory Structure
 
-```
+```text
 tests/
 ├── README.md               (this strategy in brief + how to run each suite)
 ├── ipc/                    (IPC contract conformance tests — Rust)

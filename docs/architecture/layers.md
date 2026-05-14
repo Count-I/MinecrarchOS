@@ -2,7 +2,7 @@
 
 ## Layer Map
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │                    shell/                           │  Orchestration + UX
 │         Rust · GTK4 · zbus · libinput              │  NO domain logic
@@ -30,7 +30,7 @@
 
 Planned Rust workspace layout (`Cargo.toml`):
 
-```
+```text
 shell/                    crate: minecrarch-shell
 services/
   modpack-manager/        crate: minecrarch-modpack-manager
@@ -65,7 +65,7 @@ The following imports are banned in the specified components:
 
 ### In `shell/`
 
-```
+```text
 # No direct game process management
 std::process::Command (for launching Minecraft)  → use ModpackManager D-Bus call
 
@@ -81,7 +81,7 @@ mrpack, curseforge_api                           → ModpackManager owns these
 
 ### In `services/*` (cross-service)
 
-```
+```text
 # No service importing another service's crate
 minecrarch-modpack-manager in services/overlay   → communicate via D-Bus
 minecrarch-overlay in services/updater           → communicate via D-Bus
@@ -89,7 +89,7 @@ minecrarch-overlay in services/updater           → communicate via D-Bus
 
 ### In `shared/`
 
-```
+```text
 # No business logic, no I/O, no process management
 # Only: type definitions, error enums, D-Bus interface types, constants
 ```
@@ -132,7 +132,7 @@ Each service maintains a `CONTRACT.md` defining owned responsibilities, non-resp
 
 ## infra/ and tools/
 
-```
+```text
 infra/         CI infrastructure, container definitions, reproducible build environments
 tools/         Developer scripts, check-deps.sh, QEMU helpers, gamepad emulation tools
 ```

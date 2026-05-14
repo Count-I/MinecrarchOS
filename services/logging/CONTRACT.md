@@ -52,6 +52,7 @@ All platform components must write structured logs with the following fields, so
 | `MINECRARCH_EVENT` | `GAME_STARTED`, `GAME_CRASHED`, `INSTALL_COMPLETE`, etc. | modpack-manager |
 
 This allows targeted journald queries:
+
 ```bash
 journalctl _MINECRARCH_COMPONENT=modpack-manager _MINECRARCH_EVENT=GAME_CRASHED -n 50
 ```

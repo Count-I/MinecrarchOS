@@ -12,7 +12,7 @@ The core principle: **Minecraft always runs as a systemd transient unit**. It is
 
 ### Launch Sequence
 
-```
+```text
 Shell ──D-Bus──► ModpackManager.LaunchInstance(id)
                         │
                         ▼
@@ -40,7 +40,7 @@ Shell ──D-Bus──► ModpackManager.LaunchInstance(id)
 
 ### Cgroup Topology
 
-```
+```text
 user.slice
 └── minecrarch.slice               (all MinecrarchOS processes)
     ├── minecrarch-services.slice  (runtime services)
@@ -99,7 +99,7 @@ The GPU is managed entirely by Gamescope. GPU resource allocation is implicit �
 
 The runtime monitors the game process via the systemd scope's state. When the game process exits, systemd marks the transient scope as failed (if exit code ≠ 0 or killed by signal). The runtime service subscribes to systemd's D-Bus interface for unit state changes:
 
-```
+```text
 org.freedesktop.systemd1.Manager.SubscribeToUnitState
 → watch for minecrarch-game@{id}.scope PropertiesChanged
 → ActiveState: "failed" triggers crash handling
@@ -124,7 +124,7 @@ The runtime reads `/proc/{pid}/status` or the cgroup exit event to determine whe
 
 For hung game processes (process alive but unresponsive — common in Java out-of-memory soft-lock scenarios):
 
-```
+```text
 Runtime service:
   Every 30s: check that the game's Wayland surface is still rendering
   (query Gamescope for last frame timestamp on game surface)
@@ -142,7 +142,7 @@ The frame timestamp check uses Gamescope's socket IPC. An alternative (simpler) 
 
 ### Orderly Termination (user-initiated quit)
 
-```
+```text
 1. User selects "Quit Game" in shell overlay
 2. Shell sends SIGTERM to the game's cgroup scope:
    systemctl kill --user --kill-who=all --signal=SIGTERM minecrarch-game@{id}.scope
@@ -156,7 +156,7 @@ The frame timestamp check uses Gamescope's socket IPC. An alternative (simpler) 
 
 During suspend or shutdown (see session-model.md), the runtime must terminate the game before the system suspends:
 
-```
+```text
 1. SIGTERM → 5s wait → SIGKILL (tighter timeout than orderly quit)
 2. Runtime emits GameExited or GameCrashed as appropriate
 3. Releases inhibitor lock (managed at shell level, not runtime level)
@@ -170,7 +170,7 @@ During suspend or shutdown (see session-model.md), the runtime must terminate th
 
 Minecraft Bedrock for Linux is distributed via community packaging (mcpelauncher). The actual process tree under `systemd-run`:
 
-```
+```text
 minecrarch-game@{id}.scope
 └── mcpelauncher-client [args]
     └── Minecraft (Bedrock) native binary
@@ -201,7 +201,7 @@ Java Edition introduces additional runtime layers. These are not implemented in 
 
 ### Process Tree
 
-```
+```text
 minecrarch-game@{id}.scope
 └── java [JVM args] -jar minecraft.jar [args]
     └── Minecraft Java Edition (main class)
