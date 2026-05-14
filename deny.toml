@@ -56,13 +56,11 @@ skip = []
 skip-tree = []
 
 # ── Security advisories ───────────────────────────────────────────────────────
+# Advisories not checked in CI (requires network + advisory DB fetch).
+# Run locally: cargo deny check advisories
 [advisories]
-db-path = "~/.cargo/advisory-db"
-db-urls = ["https://github.com/rustsec/advisory-db"]
-vulnerability = "deny"
-unmaintained = "warn"
+version = 2
 yanked = "deny"
-notice = "warn"
 
 # ── Source policy ─────────────────────────────────────────────────────────────
 [sources]

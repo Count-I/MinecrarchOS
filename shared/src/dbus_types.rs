@@ -1,11 +1,8 @@
-/// D-Bus type aliases and constants for MinecrarchOS IPC.
-/// Full interface contracts are defined in docs/ipc.md.
-///
-/// Instance and snapshot data are passed as D-Bus dicts (a{sv}) per the IPC spec.
-/// These type aliases document the expected field names.
+//! D-Bus type aliases and constants for MinecrarchOS IPC.
+//! Full interface contracts are defined in docs/ipc.md.
+//! Instance and snapshot data are passed as D-Bus dicts (a{sv}) per the IPC spec.
 
-/// Field keys for an instance dict (ListInstances return type).
-/// D-Bus type: a{sv} with these keys.
+/// Field keys for an instance dict (`ListInstances` return type). D-Bus type: `a{sv}`.
 pub mod instance_fields {
     pub const ID: &str = "id";
     pub const NAME: &str = "name";
