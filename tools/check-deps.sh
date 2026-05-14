@@ -24,7 +24,9 @@ check_cargo_toml() {
     fi
 
     for dep in "${forbidden[@]}"; do
-        if grep -q "\"${dep}\"" "$file" || grep -q "'${dep}'" "$file"; then
+        # Match only dependency declarations (lines like `crate-name = ...` or `crate-name = { ... }`)
+        # Excludes [package] name = "..." lines by requiring the crate name at line start
+        if grep -qE "^[[:space:]]*${dep}[[:space:]]*(=|\\.)" "$file"; then
             fail "${component} (${file}) must not depend on ${dep}"
         fi
     done
