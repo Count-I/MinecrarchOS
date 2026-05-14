@@ -15,5 +15,13 @@ MD033: false
 # First line does not need to be an H1 — some docs start with metadata
 MD041: false
 
-# Allow emphasis as heading — not used but not enforced
+# Allow emphasis as heading
 MD036: false
+
+# Allow lists without surrounding blank lines — project docs use tight
+# list formatting (list directly after label text) consistently throughout
+MD032: false
+
+# Allow flexible unordered list indentation — content may use nested
+# lists with varying indent styles
+MD007: false
