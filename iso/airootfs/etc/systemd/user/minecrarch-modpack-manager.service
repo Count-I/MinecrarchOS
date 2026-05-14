@@ -1,0 +1,23 @@
+[Unit]
+Description=Minecrarch Modpack Manager
+Documentation=https://github.com/Count-I/MinecrarchOS
+After=minecrarch-logging.service
+Requires=dbus.service
+After=dbus.service
+
+[Service]
+Type=dbus
+BusName=org.minecrarch.ModpackManager
+ExecStart=/usr/bin/minecrarch-modpack-manager
+Restart=on-failure
+RestartSec=2s
+# Maximum 5 restarts in 60s before giving up
+StartLimitBurst=5
+StartLimitIntervalSec=60
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=minecrarch-modpack-manager
+Environment=MINECRARCH_COMPONENT=modpack-manager
+
+[Install]
+WantedBy=default.target

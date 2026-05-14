@@ -1,0 +1,25 @@
+[Unit]
+Description=Gamescope Session (Minecrarch)
+Documentation=https://github.com/ValveSoftware/gamescope
+After=dbus.service
+Wants=dbus.service
+
+[Service]
+Type=simple
+# Gamescope runs the shell as a nested Wayland compositor.
+# --fullscreen: take ownership of the display
+# --xwayland-count 1: spawn one XWayland instance for compatibility
+# --: separator; everything after is the child process (the shell)
+ExecStart=gamescope \
+    --fullscreen \
+    --xwayland-count 1 \
+    -- \
+    /usr/bin/minecrarch-shell
+Restart=on-failure
+RestartSec=3s
+# If Gamescope crashes repeatedly, stop trying (prevents boot loop)
+StartLimitBurst=3
+StartLimitIntervalSec=60
+
+[Install]
+WantedBy=default.target

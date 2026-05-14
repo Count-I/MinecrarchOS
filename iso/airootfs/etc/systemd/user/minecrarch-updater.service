@@ -1,0 +1,19 @@
+[Unit]
+Description=Minecrarch Update Orchestrator
+Documentation=https://github.com/Count-I/MinecrarchOS
+After=dbus.service minecrarch-logging.service
+Requires=dbus.service
+
+[Service]
+Type=dbus
+BusName=org.minecrarch.Updater
+ExecStart=/usr/bin/minecrarch-updater
+Restart=on-failure
+RestartSec=5s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=minecrarch-updater
+Environment=MINECRARCH_COMPONENT=updater
+
+[Install]
+WantedBy=default.target
