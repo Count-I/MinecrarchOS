@@ -10,15 +10,15 @@ Read this file before taking any autonomous action. It supersedes general AI cod
 
 Read these documents before working on any component. They are the authoritative source of truth for this project.
 
-| Document | When to read |
-|---|---|
-| `CLAUDE.md` | Every session — project overview and extended context pointer |
-| `docs/skills.md` | Before working on any specific component — settled decisions and per-component constraints |
-| `docs/architecture/README.md` | Before any cross-component work — system layers, component responsibilities, IPC diagram |
-| `docs/session-model.md` | Before any work on `shell/`, `services/`, or session lifecycle — state machine, Wayland strategy, recovery flows |
-| `docs/runtime.md` | Before any work on `runtime/` or game process management — cgroup topology, supervision, error taxonomy |
-| `docs/ipc.md` | Before any work involving D-Bus — full interface contracts for all four services |
-| `docs/adr/README.md` | Before proposing any architectural change — index of all settled decisions |
+| Document                      | When to read                                                                                                     |
+| -------------------------------| ------------------------------------------------------------------------------------------------------------------|
+| `CLAUDE.md`                   | Every session — project overview and extended context pointer                                                    |
+| `docs/skills.md`              | Before working on any specific component — settled decisions and per-component constraints                       |
+| `docs/architecture/README.md` | Before any cross-component work — system layers, component responsibilities, IPC diagram                         |
+| `docs/session-model.md`       | Before any work on `shell/`, `services/`, or session lifecycle — state machine, Wayland strategy, recovery flows |
+| `docs/runtime.md`             | Before any work on `runtime/` or game process management — cgroup topology, supervision, error taxonomy          |
+| `docs/ipc.md`                 | Before any work involving D-Bus — full interface contracts for all four services                                 |
+| `docs/adr/README.md`          | Before proposing any architectural change — index of all settled decisions                                       |
 
 ---
 
@@ -211,10 +211,36 @@ When an ADR moves from `Proposed` to `Accepted` (only after user confirmation):
 
 ---
 
+## Git Workflow
+
+Full reference: `docs/git-workflow.md`. Key rules for agents:
+
+**Branches:**
+- Never commit directly to `main` for implementation work. Use a branch: `feature/`, `fix/`, `refactor/`, `ci/`, `docs/`, `chore/`.
+- Branches are short-lived. Open a PR and merge within days.
+- Branch names: lowercase, hyphens only. Example: `feature/modpack-manager-dbus-stub`.
+
+**Commits:**
+- Mandatory format: `type(scope): description` (Conventional Commits).
+- Valid types: `feat`, `fix`, `refactor`, `perf`, `ci`, `docs`, `test`, `build`, `chore`.
+- Valid scopes: `shell`, `services`, `runtime`, `session`, `iso`, `packaging`, `infra`, `docs`, `ci`, `adr`.
+- Description: lowercase, no period, present tense, under 72 chars.
+- Breaking D-Bus interface changes: include `BREAKING CHANGE:` in the commit footer.
+- Never: `fix stuff`, `WIP`, `update`, `changes`, or any non-descriptive message.
+- **Never include `Co-Authored-By:` lines** in commit messages.
+
+**PRs and merging:**
+- PR title = the squash commit message. It must follow Conventional Commits format.
+- CI must pass before merge. Required checks: `validate-pr-title`, `lint-docs`.
+- Squash merge only. Delete branch after merge.
+
+**Releases:**
+- Tags trigger the release workflow automatically.
+- Format: `v0.1-alpha`, `v0.2-alpha`, `v1.0-beta`, `v1.0`, then `2026.08`, `2027.01`.
+- Never create `release/*` branches.
+
 ## Repository Conventions
 
-- **Branch**: work on `main` unless the user specifies otherwise. This is a pre-v1 project; branch strategy will be defined in a future ADR.
-- **Commit messages**: imperative mood, present tense. Reference the relevant ADR or doc when the commit implements something architectural. Example: `implement ModpackManager D-Bus stub (ADR-0009, docs/ipc.md)`.
 - **File naming**: kebab-case for all files. Directories match the planned structure in `CLAUDE.md`.
 - **PKGBUILD**: all installable MinecrarchOS components must have a PKGBUILD in `packaging/`. Do not skip packaging for a component because "it can be installed manually."
 - **Tests**: integration tests in `tests/` using QEMU/KVM for full-stack tests, `systemd-nspawn` for service-level tests. Unit tests alongside source code using the native test framework of the component's language.

@@ -34,7 +34,7 @@ We have decided that the Minecrarch Shell is an orchestration and UX layer only.
 - Network download management
 - File integrity verification
 
-Those responsibilities belong to dedicated services in `services/`. The shell communicates with services over IPC (see ADR-0012).
+Those responsibilities belong to dedicated services in `services/`. The shell communicates with services over IPC (see [ADR-0012](../adr/0012-ipc-mechanism.md)).
 
 ## Alternatives Considered
 

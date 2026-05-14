@@ -116,18 +116,18 @@ Minecraft is treated as a privileged workload.
 
 # Planned Stack
 
-| Layer | Technology |
-|---|---|
-| Base System | Arch Linux |
-| Kernel | linux-zen |
-| Init System | systemd |
-| Bootloader | systemd-boot |
-| Filesystem | btrfs |
-| Graphics | Wayland |
-| Session Compositor | Gamescope |
-| Launcher Backend | Prism Launcher (initially) |
-| Session Model | Dedicated Gaming Session |
-| Desktop Environment | None |
+| Layer               | Technology                 |
+| ---------------------| ----------------------------|
+| Base System         | Arch Linux                 |
+| Kernel              | linux-zen                  |
+| Init System         | systemd                    |
+| Bootloader          | systemd-boot               |
+| Filesystem          | btrfs                      |
+| Graphics            | Wayland                    |
+| Session Compositor  | Gamescope                  |
+| Launcher Backend    | Prism Launcher (initially) |
+| Session Model       | Dedicated Gaming Session   |
+| Desktop Environment | None                       |
 
 ---
 

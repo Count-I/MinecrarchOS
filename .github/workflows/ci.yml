@@ -1,0 +1,113 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Validate PR title follows Conventional Commits
+  # With squash merge, PR title becomes the commit on main
+  # ─────────────────────────────────────────────
+  validate-pr-title:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            refactor
+            perf
+            ci
+            docs
+            test
+            build
+            chore
+          scopes: |
+            shell
+            services
+            runtime
+            session
+            iso
+            packaging
+            infra
+            docs
+            ci
+            adr
+          requireScope: false
+          subjectPattern: ^[a-z].+[^.]$
+          subjectPatternError: >
+            The subject must start with a lowercase letter and must not end with a period.
+
+  # ─────────────────────────────────────────────
+  # Lint all Markdown documentation
+  # ─────────────────────────────────────────────
+  lint-docs:
+    name: Lint docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          config: .markdownlint.yaml
+          globs: |
+            **/*.md
+            !CHANGELOG.md
+
+  # ─────────────────────────────────────────────
+  # Phase 1: Rust shell build and lint
+  # Uncomment when shell/ contains a Cargo.toml
+  # ─────────────────────────────────────────────
+  # build-shell:
+  #   name: Build shell (Rust)
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: dtolnay/rust-toolchain@stable
+  #       with:
+  #         components: clippy, rustfmt
+  #     - uses: Swatinem/rust-cache@v2
+  #       with:
+  #         workspaces: shell
+  #     - run: cargo fmt --manifest-path shell/Cargo.toml --check
+  #     - run: cargo clippy --manifest-path shell/Cargo.toml --all-targets -- -D warnings
+  #     - run: cargo build --manifest-path shell/Cargo.toml
+  #     - run: cargo test --manifest-path shell/Cargo.toml
+
+  # ─────────────────────────────────────────────
+  # Phase 1: Validate PKGBUILDs with namcap
+  # Uncomment when packaging/ contains PKGBUILDs
+  # ─────────────────────────────────────────────
+  # validate-pkgbuild:
+  #   name: Validate PKGBUILDs
+  #   runs-on: ubuntu-latest
+  #   container: archlinux:latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: pacman -Syu --noconfirm namcap
+  #     - run: find packaging/ -name PKGBUILD -exec namcap {} \;
+
+  # ─────────────────────────────────────────────
+  # Phase 1: Build and validate ISO
+  # Uncomment when iso/ profile is ready
+  # ─────────────────────────────────────────────
+  # build-iso:
+  #   name: Build ISO
+  #   runs-on: ubuntu-latest
+  #   container: archlinux:latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: pacman -Syu --noconfirm archiso
+  #     - run: mkarchiso -v -o /tmp/out iso/
+  #     - run: test -f /tmp/out/*.iso

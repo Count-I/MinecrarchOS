@@ -1,0 +1,10 @@
+# MinecrarchOS code ownership
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default: all changes require review from the maintainer
+* @Count-I
+
+# Architecture and ADRs — always require maintainer review
+docs/adr/ @Count-I
+docs/architecture/ @Count-I
+AGENTS.md @Count-I

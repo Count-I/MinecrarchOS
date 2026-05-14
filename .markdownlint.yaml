@@ -1,0 +1,19 @@
+# markdownlint configuration for MinecrarchOS
+# https://github.com/DavidAnson/markdownlint
+
+default: true
+
+# Allow multiple H1 headings — docs use # headings as section dividers
+MD025: false
+
+# Disable line length limit — docs prose shouldn't be hard-wrapped
+MD013: false
+
+# Allow inline HTML — readme.md uses HTML for badge alignment
+MD033: false
+
+# First line does not need to be an H1 — some docs start with metadata
+MD041: false
+
+# Allow emphasis as heading — not used but not enforced
+MD036: false

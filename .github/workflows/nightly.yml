@@ -1,0 +1,57 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # UTC midnight, every day
+  workflow_dispatch:      # Allow manual trigger from GitHub UI
+
+permissions:
+  contents: write
+
+jobs:
+  nightly-build:
+    name: Nightly build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # ─── Current: validate docs are consistent ───────────────────────────
+      - name: Check docs consistency
+        run: |
+          # Verify all ADRs referenced in the index actually exist
+          while IFS= read -r adr_file; do
+            if [ ! -f "$adr_file" ]; then
+              echo "ERROR: Referenced ADR file missing: $adr_file"
+              exit 1
+            fi
+          done < <(grep -oP 'docs/adr/\S+\.md' docs/adr/README.md)
+          echo "All referenced ADR files exist."
+
+      # ─── Phase 1+: Build ISO from main ───────────────────────────────────
+      # Uncomment when iso/ profile is ready
+      #
+      # - name: Install archiso
+      #   run: |
+      #     # Arch Linux container required for archiso
+      #     pacman -Syu --noconfirm archiso
+      #
+      # - name: Build nightly ISO
+      #   run: |
+      #     mkarchiso -v -o /tmp/out iso/
+      #     ISO_FILE=$(ls /tmp/out/*.iso)
+      #     ISO_NAME="minecrarch-os-nightly-$(date +%Y%m%d).iso"
+      #     mv "$ISO_FILE" "/tmp/out/$ISO_NAME"
+      #     echo "ISO_PATH=/tmp/out/$ISO_NAME" >> $GITHUB_ENV
+      #     echo "ISO_NAME=$ISO_NAME" >> $GITHUB_ENV
+      #
+      # - name: Publish nightly release
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     tag_name: nightly
+      #     name: "Nightly — ${{ github.run_id }}"
+      #     prerelease: true
+      #     files: ${{ env.ISO_PATH }}
+      #     body: |
+      #       Automated nightly build from `main` at ${{ github.sha }}.
+      #       Built: ${{ github.run_id }} — ${{ github.event.head_commit.message }}
+      #       Not intended for production use.
