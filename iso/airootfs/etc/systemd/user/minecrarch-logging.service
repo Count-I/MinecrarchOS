@@ -1,0 +1,19 @@
+[Unit]
+Description=Minecrarch Logging Service
+Documentation=https://github.com/Count-I/MinecrarchOS
+After=dbus.service
+Requires=dbus.service
+
+[Service]
+Type=dbus
+BusName=org.minecrarch.Logging
+ExecStart=/usr/bin/minecrarch-logging
+Restart=on-failure
+RestartSec=2s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=minecrarch-logging
+Environment=MINECRARCH_COMPONENT=logging
+
+[Install]
+WantedBy=default.target

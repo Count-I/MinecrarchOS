@@ -1,0 +1,21 @@
+[Unit]
+Description=Minecrarch Shell
+Documentation=https://github.com/Count-I/MinecrarchOS
+# Shell starts after critical services are registered on D-Bus
+After=minecrarch-logging.service minecrarch-modpack-manager.service
+Requires=minecrarch-modpack-manager.service
+# Shell is managed by Gamescope — not installed directly
+# (gamescope-session.service launches the shell as its child process)
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/minecrarch-shell
+Restart=on-failure
+RestartSec=2s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=minecrarch-shell
+Environment=MINECRARCH_COMPONENT=shell
+
+[Install]
+WantedBy=default.target

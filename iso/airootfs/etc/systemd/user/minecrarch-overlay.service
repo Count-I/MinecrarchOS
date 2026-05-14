@@ -1,0 +1,19 @@
+[Unit]
+Description=Minecrarch Overlay Service
+Documentation=https://github.com/Count-I/MinecrarchOS
+After=dbus.service minecrarch-logging.service
+Requires=dbus.service
+
+[Service]
+Type=dbus
+BusName=org.minecrarch.Overlay
+ExecStart=/usr/bin/minecrarch-overlay
+Restart=on-failure
+RestartSec=2s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=minecrarch-overlay
+Environment=MINECRARCH_COMPONENT=overlay
+
+[Install]
+WantedBy=default.target
