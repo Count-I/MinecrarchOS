@@ -57,7 +57,7 @@ Services in `services/` are not required to use Rust. Go is a strong candidate f
 ### Neutral
 
 - Services may use different languages. The D-Bus interface (ADR-0012) is the coupling point — Rust in `shell/` and Go in `services/` are fully compatible.
-- The follow-up decision between GTK4/libadwaita and Iced should evaluate: controller focus traversal support, Gamescope embedding behavior, and accessibility tree support.
+- The follow-up decision between GTK4/libadwaita and Iced was resolved in [ADR-0013](./0013-shell-ui-framework-gtk4-libadwaita.md): GTK4 + libadwaita is the accepted UI framework.
 - All build pipelines, PKGBUILD files, and CI configurations for `shell/` assume Cargo as the build system.
 
 ---

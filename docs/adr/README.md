@@ -33,6 +33,7 @@ MinecrarchOS uses ADRs because the project involves many non-obvious architectur
 | [ADR-0010](./0010-controller-first-ux.md) | Controller-First UX as Primary Interaction Model | Accepted | 2026-05-13 |
 | [ADR-0011](./0011-shell-implementation-language.md) | Shell Implementation Language: Rust | Accepted | 2026-05-13 |
 | [ADR-0012](./0012-ipc-mechanism.md) | IPC Mechanism: D-Bus (User Session Bus) | Accepted | 2026-05-13 |
+| [ADR-0013](./0013-shell-ui-framework-gtk4-libadwaita.md) | Shell UI Framework: GTK4 + libadwaita | Accepted | 2026-05-14 |
 
 ## Proposing a New ADR
 

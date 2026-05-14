@@ -22,8 +22,9 @@ These are Accepted ADRs. Do not suggest alternatives unless the user explicitly 
 | Primary input | Controller/gamepad — all UI must be fully gamepad-operable | ADR-0010 |
 | Shell language | Rust · GTK4 + libadwaita · Cargo | ADR-0011 |
 | IPC mechanism | D-Bus (user session bus) · zbus (Rust client) | ADR-0012 |
+| Shell UI framework | GTK4 + libadwaita (`gtk4-rs` + `libadwaita-rs`) | ADR-0013 |
 
-**All decisions are now settled.** No open ADRs remain. One follow-up still needed: GTK4/libadwaita vs. Iced — evaluate before Phase 1 shell implementation begins.
+**All decisions are settled. No open ADRs remain. Phase 1 implementation can begin.**
 
 ---
 
@@ -51,7 +52,7 @@ Apply these in every component, every prompt:
 
 **Tech context:**
 - Runs as a Wayland client inside Gamescope's nested compositor session.
-- Draws to screen via the UI framework (TBD — ADR-0011). Does not touch DRM/KMS directly.
+- Draws to screen via GTK4 + libadwaita (`AdwApplicationWindow` fullscreen, `AdwNavigationView` for menu stack navigation — ADR-0013). Does not touch DRM/KMS directly.
 - Receives gamepad input via the input stack (libinput or SDL2). Must handle d-pad/thumbstick navigation as the primary flow.
 - Communicates with `services/` over D-Bus (user session bus, ADR-0012) using `zbus`. Uses D-Bus signals from services to update displayed state asynchronously.
 - Session lifecycle events come from systemd (suspend, resume, shutdown) — the shell must respond to these gracefully.
@@ -217,5 +218,6 @@ Each layer is a potential failure point with its own recovery path. When proposi
 - [ADR-0008](./adr/0008-launcher-backend-prism.md) — Prism Launcher
 - [ADR-0009](./adr/0009-shell-as-orchestration-layer.md) — Shell boundary
 - [ADR-0010](./adr/0010-controller-first-ux.md) — Controller-first UX
-- [ADR-0011](./adr/0011-shell-implementation-language.md) — Language (Proposed)
-- [ADR-0012](./adr/0012-ipc-mechanism.md) — IPC (Proposed)
+- [ADR-0011](./adr/0011-shell-implementation-language.md) — Shell language: Rust
+- [ADR-0012](./adr/0012-ipc-mechanism.md) — IPC: D-Bus (user session bus)
+- [ADR-0013](./adr/0013-shell-ui-framework-gtk4-libadwaita.md) — Shell UI: GTK4 + libadwaita

@@ -221,7 +221,7 @@ Stop. Do not find a workaround that technically avoids the violation but achieve
 
 When you need to propose a new ADR:
 
-1. Create `docs/adr/NNNN-short-title.md` with status `Proposed`. Number from the next available after 0012.
+1. Create `docs/adr/NNNN-short-title.md` with status `Proposed`. Number from the next available after 0013.
 2. Fill in Context (the actual problem being faced), options (at least two), and your recommendation.
 3. Add a row to `docs/adr/README.md` with status `Proposed`.
 4. Note in your session summary that a new `Proposed` ADR was created and requires user decision before implementation proceeds.
@@ -271,13 +271,174 @@ Full reference: `docs/git-workflow.md`. Key rules for agents:
 
 ---
 
-## Current State Summary (as of Phase 0 completion)
+## Current State Summary
 
-- All 12 ADRs are `Accepted`. No open architectural decisions remain.
-- Stack is fully defined: Arch + linux-zen + systemd-boot + btrfs + Gamescope + Rust shell (GTK4) + D-Bus IPC + Prism Launcher (initial).
-- Full architecture documented in `docs/architecture/README.md`.
-- Session state machine documented in `docs/session-model.md` (7 states, 13 transitions).
-- Runtime process model documented in `docs/runtime.md` (cgroup topology, supervision, crash taxonomy).
-- D-Bus interface contracts documented in `docs/ipc.md` (4 services, full method/signal/property specs).
-- No source code exists yet. Phase 1 is the first implementation phase.
-- One follow-up needed before shell UI work begins: GTK4/libadwaita vs. Iced evaluation (noted in ADR-0011). Create a `Proposed` ADR-0013 for this if you start `shell/` work.
+- All 13 ADRs are `Accepted`. **No open architectural decisions remain.**
+- Full stack decided: Arch + linux-zen + systemd-boot + btrfs + Gamescope + Rust + GTK4/libadwaita + D-Bus/zbus + Prism Launcher.
+- Architecture fully documented: system layers, session state machine (7 states, 13 transitions), runtime/cgroup model, D-Bus contracts for all 4 services, layer boundaries, 6 state machine diagrams, MVP definition, testing strategy.
+- No source code exists yet. **Phase 1 implementation can begin immediately.**
+
+---
+
+## Phase 1 Autonomous Kickoff
+
+This section gives the exact starting point for a new agent session beginning Phase 1 with no prior context.
+
+### Pre-flight check (run first, every session)
+
+```bash
+git log --oneline -5          # verify you're on the right commit
+git status                    # no uncommitted changes
+find . -name "*.rs" | head    # confirms no source code exists yet
+busctl --user list 2>/dev/null | grep minecrarch || echo "no services running"
+```
+
+### Deliverable 1 — Workspace scaffold (start here)
+
+Branch: `feature/workspace-scaffold`
+
+Create the Cargo workspace structure. No implementation code yet — just the crate skeletons that make the workspace valid and compilable.
+
+```
+Cargo.toml          ← uncomment members one by one as crates are created
+shared/
+  Cargo.toml        ← [package] name = "minecrarch-shared", version = "0.1.0"
+  src/lib.rs        ← pub mod error; pub mod dbus_types;
+shell/
+  Cargo.toml        ← [package] name = "minecrarch-shell"
+  src/main.rs       ← fn main() { println!("minecrarch-shell stub"); }
+services/modpack-manager/
+  Cargo.toml        ← [package] name = "minecrarch-modpack-manager"
+  src/main.rs       ← stub
+```
+
+The workspace Cargo.toml must list only the crates that actually exist. Add members one by one as each crate is initialized.
+
+Dependency pinning: use `{ workspace = true }` for `tokio`, `zbus`, `tracing`, `serde`, `thiserror`, `anyhow` — these are already pinned in the root `Cargo.toml`.
+
+CI gates to pass before merging: `check-deps` (already active), `lint-docs` (no new markdown). The Phase 1 Rust CI jobs are commented out in `ci.yml` — uncomment `build-shell` when `shell/Cargo.toml` exists.
+
+### Deliverable 2 — Fake game binary (tools/fake-game/)
+
+Branch: `feature/fake-game`
+
+A minimal Rust binary that acts as the fake Minecraft process for MVP testing. Required by `docs/mvp.md`.
+
+Behavior:
+- Accept `--crash` flag: exit with code 1 after 3 seconds
+- Accept `--hang` flag: sleep indefinitely (for watchdog testing)
+- Default: sleep 30 seconds, then exit 0 (normal exit)
+- Log to stdout: `[fake-game] started pid=<PID>`, `[fake-game] exiting`
+
+This is a `tools/fake-game/` crate, NOT part of the main workspace members. Its own `Cargo.toml` at `tools/fake-game/Cargo.toml`.
+
+### Deliverable 3 — Gamescope session systemd units (iso/ + packaging/)
+
+Branch: `feature/gamescope-session`
+
+Create the systemd user unit files that boot the platform session. These are configuration files, not Rust code.
+
+Files to create:
+```
+iso/airootfs/etc/systemd/user/
+  gamescope-session.service     ← ExecStart=gamescope --fullscreen ... %h/.minecrarch-shell
+  minecrarch-shell.service      ← stub (ExecStart=/usr/bin/minecrarch-shell)
+  minecrarch-modpack-manager.service  ← stub
+  minecrarch-logging.service    ← stub
+  minecrarch-overlay.service    ← stub
+  minecrarch-updater.service    ← stub
+
+iso/airootfs/etc/systemd/user/default.target.wants/
+  gamescope-session.service     ← symlink (autostart)
+
+iso/airootfs/etc/systemd/system/
+  getty@tty1.service.d/
+    autologin.conf              ← autologin override for 'minecrarch' user
+```
+
+Key Gamescope flags for the session unit:
+```
+gamescope --fullscreen --nested --output-width 1920 --output-height 1080 \
+  --xwayland-count 1 -- /usr/bin/minecrarch-shell
+```
+
+Reference `docs/session-model.md` for service dependency ordering (`After=` and `Requires=` between units).
+
+### Deliverable 4 — Minecrarch Shell (shell/)
+
+Branch: `feature/shell-skeleton`
+
+Minimal GTK4 + libadwaita application. Must compile, launch, and be gamepad-navigable.
+
+`shell/Cargo.toml` dependencies:
+```toml
+gtk4 = { version = "0.9", features = ["v4_12"] }
+libadwaita = { version = "0.7", features = ["v1_5"] }
+zbus = { workspace = true }
+tokio = { workspace = true }
+async-channel = "2"
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+```
+
+`shell/src/main.rs` structure:
+```rust
+// 1. Initialize tracing (structured JSON logging to journald)
+// 2. Create AdwApplication
+// 3. Connect application::activate signal
+// 4. In activate: create AdwApplicationWindow, set fullscreen, create AdwNavigationView
+// 5. Push AdwNavigationPage with a "Launch Game" button
+// 6. Launch GLib main loop (app.run())
+```
+
+Gamepad focus: GTK4 handles keyboard arrow keys as focus navigation natively. For actual gamepad events (evdev), wire libinput events to `widget.child_focus(DirectionType::*)` calls. This can be a stub in Phase 1 (keyboard arrows work for MVP testing).
+
+D-Bus connection: in a separate `tokio::spawn` task, create a `zbus::Connection::session()`, subscribe to `org.minecrarch.ModpackManager` signals. Bridge signals to the GTK main loop via `async-channel`.
+
+### Deliverable 5 — ModpackManager service stub (services/modpack-manager/)
+
+Branch: `feature/modpack-manager-stub`
+
+A Rust binary that registers on D-Bus and implements the minimal interface needed for MVP testing.
+
+For Phase 1 MVP, implement only:
+- `LaunchInstance(id)` → spawn `tools/fake-game/` binary via `systemd-run --user --scope`
+- `StopInstance(id)` → send SIGTERM to the scope
+- `GameStarted` signal → emitted when fake-game process starts
+- `GameExited` signal → emitted on clean exit
+- `GameCrashed` signal → emitted on non-zero exit or signal
+
+Do NOT implement: `InstallModpack`, `RemoveInstance`, `GetInstanceStatus`, `ListInstances` (return empty list).
+
+Use `zbus::dbus_interface` macro to define the D-Bus interface. Verify it matches `docs/ipc.md` exactly.
+
+### Deliverable 6 — Recovery UI (shell/)
+
+Branch: `feature/recovery-ui`
+
+Wire the `GameCrashed` D-Bus signal to a state transition in the shell (LAUNCHING/IN_GAME → RECOVERING) and render a recovery screen.
+
+Recovery screen must contain:
+- Status text: "The game crashed." + exit code/signal if available
+- "Restart Game" button (focusable via gamepad)
+- "Return to Menu" button (focusable via gamepad)
+
+Use `AdwStatusPage` for the recovery layout. Both buttons must be reachable via d-pad navigation (Tab key in Phase 1 testing).
+
+### Implementation Order
+
+Follow this order exactly. Each deliverable is a branch + PR:
+
+1. Workspace scaffold → merge → uncomment `build-shell` CI job
+2. Fake game binary → merge
+3. Gamescope session units → merge
+4. Shell skeleton (compiles, launches, shows menu) → merge
+5. ModpackManager stub (registers D-Bus, launches fake game) → merge
+6. Recovery UI (shell handles GameCrashed, shows recovery screen) → merge
+7. **Run MVP validation procedure** (`docs/mvp.md`) → if all 9 criteria pass, Phase 1 is complete
+
+### When Phase 1 is Complete
+
+- All 9 MVP criteria from `docs/mvp.md` must pass.
+- Do NOT declare Phase 1 complete and start Phase 2 without user confirmation.
+- Create a summary PR or issue listing which MVP criteria passed and any deviations.
