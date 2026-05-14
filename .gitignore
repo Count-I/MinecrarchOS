@@ -1,0 +1,49 @@
+# Rust (shell/, and any Rust services)
+target/
+**/*.rs.bk
+*.pdb
+
+# Go (services/ if using Go)
+bin/
+vendor/
+*.test
+
+# Python (tools/, scripts/)
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Arch Linux packaging artifacts
+src/
+pkg/
+*.pkg.tar.zst
+*.pkg.tar.xz
+*.pkg.tar.gz
+
+# archiso build output
+out/
+work/
+*.iso
+
+# Environment and secrets
+.env
+.env.local
+*.key
+*.pem
+
+# Editor and OS
+.DS_Store
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.iml
+
+# Build and test artifacts
+dist/
+build/
+*.log
+*.tmp
