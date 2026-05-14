@@ -66,6 +66,67 @@ jobs:
             !CHANGELOG.md
 
   # ─────────────────────────────────────────────
+  # ADR enforcement: PRs touching architecture-relevant
+  # files must reference an ADR or state N/A
+  # ─────────────────────────────────────────────
+  adr-check:
+    name: ADR reference check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check ADR reference in PR
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          # PRs with these types are exempt from ADR requirement
+          if echo "$PR_TITLE" | grep -qE '^(docs|ci|chore|test)\('; then
+            echo "Exempt PR type — no ADR required."
+            exit 0
+          fi
+
+          # Check for ADR reference or explicit N/A
+          if echo "$PR_BODY" | grep -qE 'ADR-[0-9]{4}|ADR:\s*N/A|No ADR required'; then
+            echo "ADR reference found."
+            exit 0
+          fi
+
+          echo "ERROR: This PR must reference an ADR in the description." >&2
+          echo "  - Reference a specific ADR: 'ADR-0009'" >&2
+          echo "  - Or state explicitly: 'ADR: N/A' with a reason" >&2
+          echo "  - Or 'No ADR required: <reason>'" >&2
+          echo "See docs/adr/README.md for guidance." >&2
+          exit 1
+
+  # ─────────────────────────────────────────────
+  # Dependency boundary enforcement
+  # Validates no component imports a forbidden component
+  # Runs when any Cargo.toml changes
+  # ─────────────────────────────────────────────
+  check-deps:
+    name: Dependency boundary check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run dependency boundary checker
+        run: bash tools/check-deps.sh
+
+  # ─────────────────────────────────────────────
+  # Phase 1: cargo-deny — license and crate policy
+  # Uncomment when Cargo workspace has members
+  # ─────────────────────────────────────────────
+  # cargo-deny:
+  #   name: Cargo deny
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: EmbarkStudios/cargo-deny-action@v1
+  #       with:
+  #         command: check
+  #         arguments: --all-features
+
+  # ─────────────────────────────────────────────
   # Phase 1: Rust shell build and lint
   # Uncomment when shell/ contains a Cargo.toml
   # ─────────────────────────────────────────────

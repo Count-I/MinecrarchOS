@@ -4,21 +4,45 @@ This file instructs autonomous AI agents working on MinecrarchOS. It defines sco
 
 Read this file before taking any autonomous action. It supersedes general AI coding defaults when they conflict with project-specific rules.
 
+## Primary Directive
+
+Your primary responsibility is **preserving architectural integrity while evolving the platform**. It is NOT rapid feature delivery.
+
+Before implementing any feature:
+1. Identify which ADR governs it.
+2. Identify which component owns the responsibility.
+3. Determine whether the change introduces coupling.
+4. Determine whether a new ADR is required.
+
+**If any step is unclear: stop and request clarification. Never improvise architecture.**
+
+Full enforcement mandate: [`docs/architecture/enforcement.md`](docs/architecture/enforcement.md)
+Full layer boundary rules: [`docs/architecture/layers.md`](docs/architecture/layers.md)
+Canonical state machines: [`docs/state-machines.md`](docs/state-machines.md)
+MVP definition and success criteria: [`docs/mvp.md`](docs/mvp.md)
+Testing strategy: [`docs/testing-strategy.md`](docs/testing-strategy.md)
+
 ---
 
 ## Documentation Map
 
-Read these documents before working on any component. They are the authoritative source of truth for this project.
+Read these documents before working on any component. They are the authoritative source of truth for this project. The order matters — read top-to-bottom before starting work.
 
-| Document                      | When to read                                                                                                     |
-| -------------------------------| ------------------------------------------------------------------------------------------------------------------|
-| `CLAUDE.md`                   | Every session — project overview and extended context pointer                                                    |
-| `docs/skills.md`              | Before working on any specific component — settled decisions and per-component constraints                       |
-| `docs/architecture/README.md` | Before any cross-component work — system layers, component responsibilities, IPC diagram                         |
-| `docs/session-model.md`       | Before any work on `shell/`, `services/`, or session lifecycle — state machine, Wayland strategy, recovery flows |
-| `docs/runtime.md`             | Before any work on `runtime/` or game process management — cgroup topology, supervision, error taxonomy          |
-| `docs/ipc.md`                 | Before any work involving D-Bus — full interface contracts for all four services                                 |
-| `docs/adr/README.md`          | Before proposing any architectural change — index of all settled decisions                                       |
+| Document | When to read |
+|---|---|
+| `CLAUDE.md` | Every session — project overview and extended context pointer |
+| `docs/architecture/enforcement.md` | Every session — architectural authority and failure conditions |
+| `docs/skills.md` | Before working on any specific component — settled decisions and per-component constraints |
+| `docs/architecture/layers.md` | Before any implementation — layer boundaries and forbidden dependencies |
+| `docs/architecture/README.md` | Before any cross-component work — system layers, component responsibilities, IPC diagram |
+| `docs/state-machines.md` | Before implementing any stateful flow — canonical state machine diagrams |
+| `docs/session-model.md` | Before any work on `shell/`, `services/`, or session lifecycle |
+| `docs/runtime.md` | Before any work on `runtime/` or game process management |
+| `docs/ipc.md` | Before any work involving D-Bus — full interface contracts for all four services |
+| `services/*/CONTRACT.md` | Before working on any service — owned responsibilities and explicit non-responsibilities |
+| `docs/mvp.md` | Before starting Phase 1 implementation — MVP success criteria |
+| `docs/testing-strategy.md` | Before writing any test — test pyramid and strategy per component |
+| `docs/adr/README.md` | Before proposing any architectural change — index of all settled decisions |
 
 ---
 

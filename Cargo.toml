@@ -1,0 +1,26 @@
+[workspace]
+resolver = "2"
+
+# Members are added as components are implemented.
+# Planned workspace members (uncomment as each crate is initialized in Phase 1):
+#
+#   "shell"                      minecrarch-shell
+#   "shared"                     minecrarch-shared
+#   "runtime"                    minecrarch-runtime
+#   "services/modpack-manager"   minecrarch-modpack-manager
+#   "services/overlay"           minecrarch-overlay
+#   "services/logging"           minecrarch-logging
+#   "services/updater"           minecrarch-updater
+
+members = []
+
+# Workspace-wide dependency versions — pin here, reference with { workspace = true } in members
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+zbus = { version = "4", default-features = false, features = ["tokio"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1"
+anyhow = "1"
