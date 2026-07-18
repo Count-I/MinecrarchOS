@@ -6,3 +6,5 @@ description = "Fake Minecraft process for MVP testing. Used by ModpackManager vi
 
 # NOT a workspace member — standalone crate under tools/
 # Build: cargo build --manifest-path tools/fake-game/Cargo.toml --release
+
+[workspace]
