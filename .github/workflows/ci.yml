@@ -149,7 +149,7 @@ jobs:
           git clone --depth=1 https://github.com/wmww/gtk4-layer-shell.git /tmp/gtk4ls
           meson setup /tmp/gtk4ls/build /tmp/gtk4ls \
             --prefix=/usr \
-            -Dexamples=false -Ddocs=false -Dtests=false
+            -Dexamples=false -Ddocs=false -Dtests=false -Dintrospection=false
           sudo ninja -C /tmp/gtk4ls/build install
       - uses: dtolnay/rust-toolchain@stable
         with:
