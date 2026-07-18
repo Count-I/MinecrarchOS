@@ -143,7 +143,8 @@ jobs:
             libwayland-dev \
             meson \
             ninja-build \
-            pkg-config
+            pkg-config \
+            valac
       - name: Build and install gtk4-layer-shell from source
         run: |
           git clone --depth=1 https://github.com/wmww/gtk4-layer-shell.git /tmp/gtk4ls
