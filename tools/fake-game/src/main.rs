@@ -6,6 +6,7 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     let crash = args.iter().any(|a| a == "--crash");
     let hang = args.iter().any(|a| a == "--hang");
+    let fast = args.iter().any(|a| a == "--fast");
 
     println!("[fake-game] started pid={}", process::id());
 
@@ -17,6 +18,8 @@ fn main() {
         thread::sleep(Duration::from_secs(3));
         println!("[fake-game] exiting");
         process::exit(1);
+    } else if fast {
+        println!("[fake-game] exiting");
     } else {
         thread::sleep(Duration::from_secs(30));
         println!("[fake-game] exiting");
