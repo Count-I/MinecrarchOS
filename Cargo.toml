@@ -17,6 +17,7 @@ members = [
     "shell",
     "services/modpack-manager",
     "services/logging",
+    "services/overlay",
 ]
 
 # Workspace-wide dependency versions — pin here, reference with { workspace = true } in members
