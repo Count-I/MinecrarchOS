@@ -22,18 +22,18 @@ pub fn build(app: &adw::Application) {
     let nav_view = adw::NavigationView::new();
     let state = Rc::new(RefCell::new(SessionState::Menu));
 
-    let menu_page = build_main_menu(&state, cmd_tx);
+    // cmd_tx is shared between the main menu launch button and the recovery restart button.
+    let menu_page = build_main_menu(&state, cmd_tx.clone());
     nav_view.push(&menu_page);
 
     window.set_content(Some(&nav_view));
     window.present();
 
-    // Drive state transitions from D-Bus events on the GLib main loop.
     let nav_clone = nav_view.clone();
     let state_clone = state.clone();
     glib::MainContext::default().spawn_local(async move {
         while let Ok(event) = event_rx.recv().await {
-            handle_event(event, &nav_clone, &state_clone);
+            handle_event(event, &nav_clone, &state_clone, &cmd_tx);
         }
     });
 }
@@ -90,10 +90,89 @@ fn build_main_menu(
         .build()
 }
 
+fn build_recovery_page(
+    instance_id: &str,
+    exit_code: i32,
+    signal: &str,
+    nav_view: &adw::NavigationView,
+    state: &Rc<RefCell<SessionState>>,
+    cmd_tx: &async_channel::Sender<ShellCommand>,
+) -> adw::NavigationPage {
+    let description = if signal.is_empty() {
+        format!("The game exited unexpectedly (code {exit_code}).")
+    } else {
+        format!("The game was terminated by signal {signal} (code {exit_code}).")
+    };
+
+    let button_box = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .spacing(12)
+        .halign(gtk::Align::Center)
+        .build();
+
+    let restart_btn = gtk::Button::builder()
+        .label("Restart")
+        .css_classes(vec!["suggested-action", "pill"])
+        .build();
+
+    let return_btn = gtk::Button::builder()
+        .label("Return to Menu")
+        .css_classes(vec!["pill"])
+        .build();
+
+    let status_page = adw::StatusPage::builder()
+        .icon_name("dialog-warning-symbolic")
+        .title("Game Crashed")
+        .description(&description)
+        .child(&button_box)
+        .build();
+
+    // Restart: transition to Launching and re-send the launch command.
+    let nav_restart = nav_view.clone();
+    let state_restart = state.clone();
+    let cmd_restart = cmd_tx.clone();
+    let id_restart = instance_id.to_owned();
+    restart_btn.connect_clicked(move |_| {
+        *state_restart.borrow_mut() = SessionState::Launching {
+            instance_id: id_restart.clone(),
+        };
+        nav_restart.pop();
+        tracing::info!(instance_id = %id_restart, "restarting game after crash");
+        if let Err(e) = cmd_restart.try_send(ShellCommand::LaunchInstance {
+            id: id_restart.clone(),
+        }) {
+            tracing::warn!(error = %e, "command channel full on restart");
+        }
+    });
+
+    // Return to Menu: pop the recovery page and transition back to Menu.
+    let nav_return = nav_view.clone();
+    let state_return = state.clone();
+    return_btn.connect_clicked(move |_| {
+        *state_return.borrow_mut() = SessionState::Menu;
+        nav_return.pop();
+        tracing::info!("returning to menu after crash");
+    });
+
+    button_box.append(&restart_btn);
+    button_box.append(&return_btn);
+
+    let toolbar = adw::ToolbarView::new();
+    toolbar.add_top_bar(&adw::HeaderBar::new());
+    toolbar.set_content(Some(&status_page));
+
+    adw::NavigationPage::builder()
+        .title("Game Crashed")
+        .tag("recovery")
+        .child(&toolbar)
+        .build()
+}
+
 fn handle_event(
     event: ShellEvent,
-    _nav_view: &adw::NavigationView,
+    nav_view: &adw::NavigationView,
     state: &Rc<RefCell<SessionState>>,
+    cmd_tx: &async_channel::Sender<ShellCommand>,
 ) {
     match event {
         ShellEvent::GameStarted { instance_id, pid } => {
@@ -114,11 +193,13 @@ fn handle_event(
         } => {
             tracing::warn!(%instance_id, exit_code, %signal, "game crashed — entering RECOVERING");
             *state.borrow_mut() = SessionState::Recovering {
-                instance_id,
+                instance_id: instance_id.clone(),
                 exit_code,
-                signal,
+                signal: signal.clone(),
             };
-            // D6 pushes the recovery UI page here.
+            let page =
+                build_recovery_page(&instance_id, exit_code, &signal, nav_view, state, cmd_tx);
+            nav_view.push(&page);
         }
     }
 }
