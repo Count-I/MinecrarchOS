@@ -1,7 +1,7 @@
 mod manager;
 
 use anyhow::Context;
-use manager::{GameEvent, ModpackManager, OBJECT_PATH};
+use manager::{ManagerEvent, ModpackManager, OBJECT_PATH};
 use tokio::sync::mpsc;
 use tracing_subscriber::EnvFilter;
 use zbus::connection::Builder;
@@ -14,7 +14,7 @@ async fn main() -> anyhow::Result<()> {
         .with_env_filter(EnvFilter::from_default_env().add_directive(tracing::Level::INFO.into()))
         .init();
 
-    let (tx, mut rx) = mpsc::channel::<GameEvent>(32);
+    let (tx, mut rx) = mpsc::channel::<ManagerEvent>(32);
     let mgr = ModpackManager::new(tx);
 
     let conn = Builder::session()
@@ -34,13 +34,13 @@ async fn main() -> anyhow::Result<()> {
             SignalContext::new(&conn, OBJECT_PATH).context("SignalContext construction failed")?;
 
         match event {
-            GameEvent::Started { instance_id, pid } => {
+            ManagerEvent::GameStarted { instance_id, pid } => {
                 tracing::info!(%instance_id, pid, "emitting GameStarted");
                 ModpackManager::game_started(&ctxt, &instance_id, pid)
                     .await
                     .ok();
             }
-            GameEvent::Exited {
+            ManagerEvent::GameExited {
                 instance_id,
                 exit_code,
             } => {
@@ -49,13 +49,23 @@ async fn main() -> anyhow::Result<()> {
                     .await
                     .ok();
             }
-            GameEvent::Crashed {
+            ManagerEvent::GameCrashed {
                 instance_id,
                 exit_code,
                 signal,
             } => {
                 tracing::warn!(%instance_id, exit_code, %signal, "emitting GameCrashed");
                 ModpackManager::game_crashed(&ctxt, &instance_id, exit_code, &signal)
+                    .await
+                    .ok();
+            }
+            ManagerEvent::InstallProgress {
+                instance_id,
+                percent,
+                status,
+            } => {
+                tracing::info!(%instance_id, percent, %status, "emitting InstallProgress");
+                ModpackManager::install_progress(&ctxt, &instance_id, percent, &status)
                     .await
                     .ok();
             }
