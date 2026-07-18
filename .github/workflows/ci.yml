@@ -143,14 +143,17 @@ jobs:
             libwayland-dev \
             meson \
             ninja-build \
-            pkg-config \
-            valac
+            pkg-config
       - name: Build and install gtk4-layer-shell from source
         run: |
           git clone --depth=1 https://github.com/wmww/gtk4-layer-shell.git /tmp/gtk4ls
+          # examples/meson.build references `vapi` which is only defined when
+          # introspection is on. Remove the subdir call so configure never
+          # processes examples/ — we only need the shared library.
+          sed -i "/subdir('examples')/d" /tmp/gtk4ls/meson.build
           meson setup /tmp/gtk4ls/build /tmp/gtk4ls \
             --prefix=/usr \
-            -Dexamples=false -Ddocs=false -Dtests=false -Dintrospection=false
+            -Ddocs=false -Dtests=false -Dintrospection=false
           sudo ninja -C /tmp/gtk4ls/build install
       - uses: dtolnay/rust-toolchain@stable
         with:
