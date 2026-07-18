@@ -299,7 +299,7 @@ Branch: `feature/workspace-scaffold`
 
 Create the Cargo workspace structure. No implementation code yet — just the crate skeletons that make the workspace valid and compilable.
 
-```
+```text
 Cargo.toml          ← uncomment members one by one as crates are created
 shared/
   Cargo.toml        ← [package] name = "minecrarch-shared", version = "0.1.0"
@@ -339,7 +339,8 @@ Branch: `feature/gamescope-session`
 Create the systemd user unit files that boot the platform session. These are configuration files, not Rust code.
 
 Files to create:
-```
+
+```text
 iso/airootfs/etc/systemd/user/
   gamescope-session.service     ← ExecStart=gamescope --fullscreen ... %h/.minecrarch-shell
   minecrarch-shell.service      ← stub (ExecStart=/usr/bin/minecrarch-shell)
@@ -357,7 +358,8 @@ iso/airootfs/etc/systemd/system/
 ```
 
 Key Gamescope flags for the session unit:
-```
+
+```bash
 gamescope --fullscreen --nested --output-width 1920 --output-height 1080 \
   --xwayland-count 1 -- /usr/bin/minecrarch-shell
 ```
@@ -371,6 +373,7 @@ Branch: `feature/shell-skeleton`
 Minimal GTK4 + libadwaita application. Must compile, launch, and be gamepad-navigable.
 
 `shell/Cargo.toml` dependencies:
+
 ```toml
 gtk4 = { version = "0.9", features = ["v4_12"] }
 libadwaita = { version = "0.7", features = ["v1_5"] }
@@ -382,6 +385,7 @@ tracing-subscriber = { workspace = true }
 ```
 
 `shell/src/main.rs` structure:
+
 ```rust
 // 1. Initialize tracing (structured JSON logging to journald)
 // 2. Create AdwApplication

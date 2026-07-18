@@ -12,7 +12,11 @@ resolver = "2"
 #   "services/logging"           minecrarch-logging
 #   "services/updater"           minecrarch-updater
 
-members = []
+members = [
+    "shared",
+    "shell",
+    "services/modpack-manager",
+]
 
 # Workspace-wide dependency versions — pin here, reference with { workspace = true } in members
 [workspace.dependencies]

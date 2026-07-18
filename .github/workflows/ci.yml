@@ -113,38 +113,46 @@ jobs:
         run: bash tools/check-deps.sh
 
   # ─────────────────────────────────────────────
-  # Phase 1: cargo-deny — license and crate policy
-  # Uncomment when Cargo workspace has members
+  # cargo-deny — license and crate policy
   # ─────────────────────────────────────────────
-  # cargo-deny:
-  #   name: Cargo deny
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: EmbarkStudios/cargo-deny-action@v1
-  #       with:
-  #         command: check
-  #         arguments: --all-features
+  cargo-deny:
+    name: Cargo deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check licenses bans sources
 
   # ─────────────────────────────────────────────
-  # Phase 1: Rust shell build and lint
-  # Uncomment when shell/ contains a Cargo.toml
+  # Rust workspace build and lint
   # ─────────────────────────────────────────────
-  # build-shell:
-  #   name: Build shell (Rust)
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: dtolnay/rust-toolchain@stable
-  #       with:
-  #         components: clippy, rustfmt
-  #     - uses: Swatinem/rust-cache@v2
-  #       with:
-  #         workspaces: shell
-  #     - run: cargo fmt --manifest-path shell/Cargo.toml --check
-  #     - run: cargo clippy --manifest-path shell/Cargo.toml --all-targets -- -D warnings
-  #     - run: cargo build --manifest-path shell/Cargo.toml
-  #     - run: cargo test --manifest-path shell/Cargo.toml
+  build-rust:
+    name: Build Rust workspace
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GTK4 and libadwaita system dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends \
+            libgtk-4-dev \
+            libadwaita-1-dev \
+            libglib2.0-dev \
+            pkg-config
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Build
+        run: cargo build --workspace
+      - name: Test
+        run: cargo test --workspace
 
   # ─────────────────────────────────────────────
   # Phase 1: Validate PKGBUILDs with namcap
