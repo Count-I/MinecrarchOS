@@ -1,0 +1,52 @@
+# MinecrarchOS live ISO package list
+# Build with: mkarchiso -v -w /tmp/minecrarch-work -o /tmp/minecrarch-out iso/
+
+# ── base system ──────────────────────────────────────────────────────────────
+base
+base-devel
+
+# ── kernel — linux-zen for reduced latency (ADR-0002) ────────────────────────
+linux-zen
+linux-zen-headers
+linux-firmware
+amd-ucode
+intel-ucode
+
+# ── bootloader — systemd-boot (ADR-0003) ─────────────────────────────────────
+efibootmgr
+
+# ── filesystem — btrfs (ADR-0004) ────────────────────────────────────────────
+btrfs-progs
+dosfstools
+gptfdisk
+
+# ── session compositor — Gamescope (ADR-0005) ────────────────────────────────
+gamescope
+
+# ── shell UI framework — GTK4 + libadwaita (ADR-0013) ────────────────────────
+gtk4
+libadwaita
+gtk4-layer-shell
+
+# ── D-Bus / IPC (ADR-0012) ───────────────────────────────────────────────────
+dbus
+
+# ── networking ───────────────────────────────────────────────────────────────
+networkmanager
+
+# ── runtime tools ────────────────────────────────────────────────────────────
+curl
+sudo
+bash
+
+# ── Minecraft launcher backend — Prism Launcher (ADR-0008) ───────────────────
+# prismlauncher is available in the extra repo on Arch Linux
+prismlauncher
+
+# ── MinecrarchOS platform packages ───────────────────────────────────────────
+# These are provided by the custom [minecrarch] pacman repository (P3-D5).
+# The repository is configured in pacman.conf; packages are built via PKGBUILDs
+# in packaging/ (P3-D2) and signed with the project GPG key.
+#
+# minecrarch-core       (shell + all services: built from this repo's Cargo workspace)
+# minecrarch-session    (systemd user units + airootfs config)
