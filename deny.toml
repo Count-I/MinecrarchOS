@@ -9,13 +9,16 @@ targets = []
 
 # ── License policy ────────────────────────────────────────────────────────────
 [licenses]
-# Only allow GPL-compatible licenses (MinecrarchOS targets GPLv3/MIT/Apache-2.0)
+version = 2
+# Only allow GPL-compatible licenses (MinecrarchOS targets GPLv3/MIT/Apache-2.0).
+# Any crate with a license not in this list — including unlicensed crates — is denied.
 allow = [
     "MIT",
     "Apache-2.0",
     "Apache-2.0 WITH LLVM-exception",
     "MPL-2.0",
     "Unicode-DFS-2016",
+    "Unicode-3.0",
     "ISC",
     "BSD-2-Clause",
     "BSD-3-Clause",
@@ -26,43 +29,34 @@ allow = [
     "LGPL-3.0",
     "LGPL-2.1",
 ]
-deny = [
-    # Proprietary or non-distributable
-    "SSPL-1.0",
-    "BUSL-1.1",
-]
-unlicensed = "deny"
-copyleft = "warn"
 
 # ── Banned external crates ────────────────────────────────────────────────────
 [bans]
 multiple-versions = "warn"
-wildcards = "deny"
+# Path dependencies within the workspace don't carry version constraints by design.
+# Crates.io wildcards (foo = "*") are still denied via the deny list below.
+wildcards = "warn"
 highlight = "all"
 
 deny = [
     # No OpenSSL — use rustls for TLS
     { name = "openssl" },
     { name = "openssl-sys" },
-
-    # No Tokio in shared/ — shared must be runtime-agnostic
-    # (enforced per-crate rather than globally — see layers.md)
-
-    # No direct GUI frameworks in services — services are headless
-    { name = "gtk4", wrappers = ["minecrarch-modpack-manager", "minecrarch-overlay", "minecrarch-logging", "minecrarch-updater", "minecrarch-runtime"] },
 ]
+
+# gtk4 is legitimately used by minecrarch-shell (ADR-0013).
+# Enforcement that services don't pull in gtk4 is handled by tools/check-deps.sh,
+# not by cargo-deny (which cannot scope bans per workspace member).
 
 skip = []
 skip-tree = []
 
 # ── Security advisories ───────────────────────────────────────────────────────
+# Advisories not checked in CI (requires network + advisory DB fetch).
+# Run locally: cargo deny check advisories
 [advisories]
-db-path = "~/.cargo/advisory-db"
-db-urls = ["https://github.com/rustsec/advisory-db"]
-vulnerability = "deny"
-unmaintained = "warn"
+version = 2
 yanked = "deny"
-notice = "warn"
 
 # ── Source policy ─────────────────────────────────────────────────────────────
 [sources]

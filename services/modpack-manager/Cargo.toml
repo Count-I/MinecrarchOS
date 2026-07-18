@@ -1,0 +1,16 @@
+[package]
+name = "minecrarch-modpack-manager"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+
+[[bin]]
+name = "minecrarch-modpack-manager"
+path = "src/main.rs"
+
+[dependencies]
+zbus = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["env-filter", "json"] }
+minecrarch-shared = { path = "../../shared", version = "0.1" }

@@ -15,8 +15,9 @@ __pycache__/
 .venv/
 venv/
 
-# Arch Linux packaging artifacts
-src/
+# Arch Linux packaging artifacts (makepkg build dirs — scoped to packaging/)
+packaging/**/src/
+packaging/**/pkg/
 pkg/
 *.pkg.tar.zst
 *.pkg.tar.xz
