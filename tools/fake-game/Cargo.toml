@@ -1,0 +1,10 @@
+[package]
+name = "fake-game"
+version = "0.1.0"
+edition = "2021"
+description = "Fake Minecraft process for MVP testing. Used by ModpackManager via systemd-run."
+
+# NOT a workspace member — standalone crate under tools/
+# Build: cargo build --manifest-path tools/fake-game/Cargo.toml --release
+
+[workspace]
