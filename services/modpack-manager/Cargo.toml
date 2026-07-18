@@ -13,4 +13,5 @@ zbus = { workspace = true }
 tokio = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["env-filter", "json"] }
+anyhow = { workspace = true }
 minecrarch-shared = { path = "../../shared", version = "0.1" }
