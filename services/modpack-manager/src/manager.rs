@@ -41,8 +41,7 @@ impl ModpackManager {
     }
 
     fn game_binary() -> String {
-        std::env::var("MINECRARCH_GAME_BINARY")
-            .unwrap_or_else(|_| "/usr/bin/fake-game".to_string())
+        std::env::var("MINECRARCH_GAME_BINARY").unwrap_or_else(|_| "/usr/bin/fake-game".to_string())
     }
 }
 
