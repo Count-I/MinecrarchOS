@@ -16,6 +16,7 @@ members = [
     "shared",
     "shell",
     "services/modpack-manager",
+    "services/logging",
 ]
 
 # Workspace-wide dependency versions — pin here, reference with { workspace = true } in members
